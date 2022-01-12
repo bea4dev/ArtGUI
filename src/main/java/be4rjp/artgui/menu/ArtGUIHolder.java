@@ -6,6 +6,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 public class ArtGUIHolder implements InventoryHolder {
 
@@ -22,7 +23,7 @@ public class ArtGUIHolder implements InventoryHolder {
 
     private final Player player;
 
-    private final Deque<MenuHistory> historyQueue = new ArrayDeque<>();
+    private final Deque<MenuHistory> historyQueue = new ConcurrentLinkedDeque<>();
 
     private ArtGUIHolder(UUID uuid, Player player){
         this.uuid = uuid;
@@ -50,6 +51,12 @@ public class ArtGUIHolder implements InventoryHolder {
             }
         }
         return 0;
+    }
+    
+    public MenuHistory getPreviousMenu(){
+        Deque<MenuHistory> temp = new ArrayDeque<>(historyQueue);
+        temp.pollLast();
+        return temp.peekLast();
     }
 
     public void back(){

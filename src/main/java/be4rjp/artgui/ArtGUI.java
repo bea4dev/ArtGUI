@@ -4,6 +4,7 @@ import be4rjp.artgui.menu.ArtGUIHolder;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
@@ -21,6 +22,8 @@ public final class ArtGUI extends JavaPlugin {
         // Plugin startup logic
         artGUI = this;
         plugin = this;
+        
+        registerListener();
     }
 
     @Override
@@ -34,16 +37,19 @@ public final class ArtGUI extends JavaPlugin {
 
     public Plugin getPlugin() {return plugin;}
 
-    public void runSync(Runnable runnable){
-        Bukkit.getScheduler().runTask(plugin, runnable);
-    }
+    public void runSync(Runnable runnable){Bukkit.getScheduler().runTask(plugin, runnable);}
 
-    public void runAsync(Runnable runnable){
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, runnable);
-    }
+    public void runAsync(Runnable runnable){Bukkit.getScheduler().runTaskAsynchronously(plugin, runnable);}
+    
+    public void runSyncDelayed(Runnable runnable, long delay){Bukkit.getScheduler().runTaskLater(plugin, runnable, delay);}
 
 
     private final Map<UUID, ArtGUIHolder> playerHolderMap = new HashMap<>();
 
     public Map<UUID, ArtGUIHolder> getPlayerHolderMap() {return playerHolderMap;}
+    
+    private void registerListener(){
+        PluginManager pluginManager = Bukkit.getPluginManager();
+        pluginManager.registerEvents(new EventListener(this), plugin);
+    }
 }

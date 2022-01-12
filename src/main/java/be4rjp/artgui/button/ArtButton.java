@@ -1,15 +1,12 @@
 package be4rjp.artgui.button;
 
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
-
-import java.util.function.Consumer;
 
 public class ArtButton {
 
-    private final ItemStack itemStack;
+    protected final ItemStack itemStack;
 
-    private Consumer<InventoryClickEvent> eventConsumer;
+    private ButtonClickListener buttonClickListener;
 
     public ArtButton(ItemStack itemStack){
         this.itemStack = itemStack;
@@ -17,10 +14,10 @@ public class ArtButton {
 
     public ItemStack getItemStack() {return itemStack;}
 
-    public Consumer<InventoryClickEvent> getEventConsumer() {return eventConsumer;}
+    public ButtonClickListener getEventListener() {return buttonClickListener;}
 
-    public ArtButton listener(Consumer<InventoryClickEvent> eventConsumer) {
-        this.eventConsumer = eventConsumer;
+    public ArtButton listener(ButtonClickListener buttonClickListener) {
+        this.buttonClickListener = buttonClickListener;
         return this;
     }
 }

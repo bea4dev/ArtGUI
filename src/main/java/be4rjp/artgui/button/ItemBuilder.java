@@ -22,9 +22,15 @@ public class ItemBuilder {
 
     private String[] lore = null;
 
-    public void name(String name){this.name = name;}
+    public ItemBuilder name(String name){
+        this.name = name;
+        return this;
+    }
 
-    public void lore(String[] lore) {this.lore = lore;}
+    public ItemBuilder lore(String... lore) {
+        this.lore = lore;
+        return this;
+    }
 
     public ItemStack build(){
         ItemStack itemStack = new ItemStack(material);
