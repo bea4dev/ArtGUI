@@ -1,81 +1,47 @@
 package be4rjp.artgui.menu;
 
-import be4rjp.artgui.ArtGUI;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.Map;
 
 public class ArtGUIHolder implements InventoryHolder {
-
-    public static ArtGUIHolder getGUIHolder(ArtGUI artGUI, Player player){
-        return artGUI.getPlayerHolderMap().computeIfAbsent(player.getUniqueId(), uuid -> new ArtGUIHolder(uuid, player));
-    }
-
-    public static void removeGUIHolder(ArtGUI artGUI, Player player){
-        artGUI.getPlayerHolderMap().remove(player.getUniqueId());
-    }
-
-
-    private final UUID uuid;
-
-    private final Player player;
-
-    private final Deque<MenuHistory> historyQueue = new ConcurrentLinkedDeque<>();
-
-    private ArtGUIHolder(UUID uuid, Player player){
-        this.uuid = uuid;
-        this.player = player;
-    }
-
-    public void clearGUIQueue(){this.historyQueue.clear();}
-
-    public void addQueue(ArtMenu artMenu, int page){
-        for(MenuHistory menuHistory : historyQueue){
-            if(menuHistory.getArtMenu() == artMenu){
-                menuHistory.setPage(page);
-                return;
-            }
-        }
-        historyQueue.add(new MenuHistory(artMenu, page));
-    }
-
-    public MenuHistory getCurrentMenu(){return historyQueue.peekLast();}
-
-    public int getPage(ArtMenu artMenu){
-        for(MenuHistory menuHistory : historyQueue){
-            if(menuHistory.getArtMenu() == artMenu){
-                return menuHistory.getPage();
-            }
-        }
-        return 0;
+    
+    private final ArtMenu artMenu;
+    
+    private int page;
+    
+    private final HistoryData historyData;
+    
+    public ArtGUIHolder(ArtMenu artMenu, HistoryData historyData){
+        this.artMenu = artMenu;
+        this.historyData = historyData;
     }
     
-    public MenuHistory getPreviousMenu(){
-        Deque<MenuHistory> temp = new ArrayDeque<>(historyQueue);
-        temp.pollLast();
-        return temp.peekLast();
-    }
-
-    public void back(){
-        MenuHistory menuHistory = historyQueue.pollLast();
-        if(menuHistory == null){
-            player.closeInventory();
-            return;
-        }
-
-        menuHistory = historyQueue.peekLast();
-        if(menuHistory == null){
-            player.closeInventory();
-        }else{
-            menuHistory.getArtMenu().open(player);
-        }
-    }
-
+    public ArtMenu getArtMenu() {return artMenu;}
+    
+    public HistoryData getHistoryData() {return historyData;}
+    
+    public int getPage() {return page;}
+    
+    public void setPage(int page) {this.page = page;}
+    
+    private Map<Integer, Object> pageContents = null;
+    
+    private Menu menu = null;
+    
+    public Map<Integer, Object> getPageContents() {return pageContents;}
+    
+    public void setPageContents(Map<Integer, Object> pageContents) {this.pageContents = pageContents;}
+    
+    public Menu getMenu() {return menu;}
+    
+    public void setMenu(Menu menu) {this.menu = menu;}
+    
+    
     @Override
-    public Inventory getInventory() {
+    public @NotNull Inventory getInventory() {
         return null;
     }
 }

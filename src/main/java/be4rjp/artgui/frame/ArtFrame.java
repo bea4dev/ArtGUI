@@ -12,6 +12,11 @@ public class ArtFrame {
         this.rows = rows;
         this.frameButtons = new ArtButton[rows * 9];
     }
+    
+    public ArtFrame(ArtButton[] frameButtons){
+        this.frameButtons = frameButtons;
+        this.rows = frameButtons.length / 9;
+    }
 
     public ArtButton[] getFrameButtons() {return frameButtons;}
 

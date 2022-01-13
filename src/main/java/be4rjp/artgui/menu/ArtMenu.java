@@ -6,12 +6,12 @@ import be4rjp.artgui.frame.ArtFrame;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -35,8 +35,6 @@ public class ArtMenu {
     
     public String getDisplayName() {return displayName;}
     
-    public String getRawName(){return ChatColor.stripColor(displayName);}
-    
     
     private Consumer<Menu> syncGUICreator = null;
 
@@ -53,18 +51,18 @@ public class ArtMenu {
 
     private Consumer<InventoryOpenEvent> inventoryOpenEventConsumer;
 
-    private Consumer<InventoryCloseEvent> inventoryCloseEventConsumer;
+    private GUICloseListener guiCloseListener;
 
     public void onOpen(Consumer<InventoryOpenEvent> inventoryOpenEventConsumer){
         this.inventoryOpenEventConsumer = inventoryOpenEventConsumer;
     }
 
-    public void onClose(Consumer<InventoryCloseEvent> inventoryCloseEventConsumer) {
-        this.inventoryCloseEventConsumer = inventoryCloseEventConsumer;
+    public void onClose(GUICloseListener guiCloseListener) {
+        this.guiCloseListener = guiCloseListener;
     }
-
-    public Consumer<InventoryCloseEvent> getInventoryCloseEventConsumer() {return inventoryCloseEventConsumer;}
-
+    
+    public GUICloseListener getGuiCloseListener() {return guiCloseListener;}
+    
     public Consumer<InventoryOpenEvent> getInventoryOpenEventConsumer() {return inventoryOpenEventConsumer;}
 
 
@@ -75,22 +73,19 @@ public class ArtMenu {
     public ArtFrame getArtFrame() {return artFrame;}
     
     
-    private Inventory createInventory(@Nullable ArtGUIHolder artGUIHolder){
-        String title = displayName;
-        if(artGUIHolder != null) title = ReplaceNameManager.replace(displayName, artGUIHolder);
-        
-        return Bukkit.createInventory(artGUIHolder, slots, title);
+    private NamedInventory createInventory(@Nullable HistoryData historyData){
+        String replaced = this.displayName;
+        if(historyData != null) replaced = ReplaceNameManager.replace(replaced, historyData);
+        ArtGUIHolder artGUIHolder = new ArtGUIHolder(this, historyData);
+        Inventory inventory = Bukkit.createInventory(artGUIHolder, slots, replaced);
+        return new NamedInventory(ChatColor.stripColor(replaced), replaced, inventory);
     }
-
-    private Menu menu;
     
-    public Menu getMenu() {return menu;}
-    
-    private CompletableFuture<ArtMenu> createMenu(){
-        CompletableFuture<ArtMenu> completableFuture = new CompletableFuture<>();
+    private CompletableFuture<Menu> createMenu(){
+        CompletableFuture<Menu> completableFuture = new CompletableFuture<>();
 
         if(artFrame == null) artFrame = new ArtFrame(rows);
-        menu = new Menu(rows, slots, artFrame);
+        Menu menu = new Menu(this, rows, slots, artFrame);
         
         if(syncGUICreator != null){
             artGUI.runSync(() -> {
@@ -98,17 +93,17 @@ public class ArtMenu {
                 if(asyncGUICreator != null){
                     artGUI.runAsync(() -> {
                         asyncGUICreator.accept(menu);
-                        completableFuture.complete(this);
+                        completableFuture.complete(menu);
                     });
                 }else{
-                    completableFuture.complete(this);
+                    completableFuture.complete(menu);
                 }
             });
         }else {
             if (asyncGUICreator != null) {
                 artGUI.runAsync(() -> {
                     asyncGUICreator.accept(menu);
-                    completableFuture.complete(this);
+                    completableFuture.complete(menu);
                 });
             }
         }
@@ -118,65 +113,92 @@ public class ArtMenu {
     
 
     public void open(Player player){
-        this.createMenu().thenAccept(artMenu -> {
+        this.createMenu().thenAccept(menu -> {
             artGUI.runSync(() -> {
-                ArtGUIHolder artGUIHolder = ArtGUIHolder.getGUIHolder(artGUI, player);
-                int page = artGUIHolder.getPage(this);
-                openPage(player, page);
+                HistoryData historyData = HistoryData.getHistoryData(artGUI, player);
+                int page = historyData.getPage(this);
+                openPage(player, menu, page, historyData);
             });
         });
     }
     
-    public void openPage(Player player, int page){
+    public void openPage(Player player, Menu menu, int page, HistoryData historyData){
         if(menu == null) return;
     
         Map<Integer, Object> components = menu.getPageComponents(page);
         if(components == null) return;
+        historyData.setCurrentPageContent(components);
         
-        ArtGUIHolder artGUIHolder = ArtGUIHolder.getGUIHolder(artGUI, player);
-        artGUIHolder.addQueue(this, page);
-        Inventory inventory = createInventory(artGUIHolder);
+        historyData.addQueue(this, menu, page);
+        NamedInventory namedInventory = createInventory(historyData);
+        menu.setNamedInventory(namedInventory);
+        ArtGUIHolder artGUIHolder = (ArtGUIHolder) namedInventory.inventory.getHolder();
+        if(artGUIHolder == null) return;
         
-        artGUI.runAsync(() -> {
-            for(int slot = 0; slot < slots; slot++){
-                Object component = components.get(slot);
-                
-                MenuHistory previousMenu = artGUIHolder.getPreviousMenu();
-                if(component instanceof MenuBackButton){
-                    if(previousMenu == null) continue;
+        artGUIHolder.setPageContents(components);
+        artGUIHolder.setMenu(menu);
+        artGUIHolder.setPage(page);
+    
+        for(int slot = 0; slot < slots; slot++){
+            Object component = components.get(slot);
+        
+            MenuHistory previousMenu = historyData.getPreviousMenu();
+            if(component instanceof MenuBackButton){
+                if(previousMenu == null){
+                    namedInventory.inventory.setItem(slot, ((StandardButton) component).getAlternativeButton().getItemStack());
+                    menu.setAltButton((StandardButton) component, true);
+                    continue;
                 }
-                if(component instanceof PageBackButton){
-                    if(page == 0) continue;
+            }
+            if(component instanceof PageBackButton){
+                if(page == 0){
+                    namedInventory.inventory.setItem(slot, ((StandardButton) component).getAlternativeButton().getItemStack());
+                    menu.setAltButton((StandardButton) component, true);
+                    continue;
                 }
-                if(component instanceof PageNextButton){
-                    if(page == menu.getCurrentPage()) continue;
-                }
-                
-                if(component instanceof RewriteNameButton){
-                    ((RewriteNameButton) component).getRewriteNameItem(artGUIHolder);
-                }
-                
-                if(component instanceof ArtButton){
-                    inventory.setItem(slot, ((ArtButton) component).getItemStack());
-                }else if(component instanceof ItemStack){
-                    inventory.setItem(slot, (ItemStack) component);
+            }
+            if(component instanceof PageNextButton){
+                if(page == menu.getCurrentMaxPage()){
+                    namedInventory.inventory.setItem(slot, ((StandardButton) component).getAlternativeButton().getItemStack());
+                    menu.setAltButton((StandardButton) component, true);
+                    continue;
                 }
             }
         
-            artGUI.runSync(() -> player.openInventory(inventory));
-        });
+            if(component instanceof StandardButton){
+                namedInventory.inventory.setItem(slot, ((StandardButton) component).getRewriteNameItem(historyData));
+                menu.setAltButton((StandardButton) component, false);
+                continue;
+            }
+        
+            if(component instanceof ArtButton){
+                namedInventory.inventory.setItem(slot, ((ArtButton) component).getItemStack());
+            }else if(component instanceof ItemStack){
+                namedInventory.inventory.setItem(slot, (ItemStack) component);
+            }
+        }
+        
+        historyData.setNowOpeningMenu(this);
+        historyData.setNowOpeningPage(page);
+        player.openInventory(namedInventory.inventory);
     }
 
     public void nextPage(Player player){
-        ArtGUIHolder artGUIHolder = ArtGUIHolder.getGUIHolder(artGUI, player);
-        int page = artGUIHolder.getPage(this) + 1;
-        openPage(player, page);
+        HistoryData historyData = HistoryData.getHistoryData(artGUI, player);
+        MenuHistory menuHistory = historyData.getCurrentMenu();
+        if(menuHistory == null) return;
+        
+        int page = menuHistory.getPage() + 1;
+        openPage(player, menuHistory.getMenu(), page, historyData);
     }
     
     public void backPage(Player player){
-        ArtGUIHolder artGUIHolder = ArtGUIHolder.getGUIHolder(artGUI, player);
-        int page = artGUIHolder.getPage(this) - 1;
-        openPage(player, page);
+        HistoryData historyData = HistoryData.getHistoryData(artGUI, player);
+        MenuHistory menuHistory = historyData.getCurrentMenu();
+        if(menuHistory == null) return;
+    
+        int page = menuHistory.getPage() - 1;
+        openPage(player, menuHistory.getMenu(), page, historyData);
     }
 
 }
