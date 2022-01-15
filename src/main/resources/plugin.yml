@@ -1,4 +1,0 @@
-name: ArtGUI
-version: '${project.version}'
-main: be4rjp.artgui.ArtGUI
-api-version: 1.15

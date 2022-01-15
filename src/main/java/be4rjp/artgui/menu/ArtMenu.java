@@ -6,16 +6,17 @@ import be4rjp.artgui.frame.ArtFrame;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
+/**
+ * メニュークラス
+ */
 public class ArtMenu {
 
     private final ArtGUI artGUI;
@@ -39,35 +40,45 @@ public class ArtMenu {
     private Consumer<Menu> syncGUICreator = null;
 
     private Consumer<Menu> asyncGUICreator = null;
-
+    
+    /**
+     * ボタンやアイテムの配置をメインスレッドで設定します。
+     * メニューを開くたびに毎回実行されます
+     * @param creator Consumer
+     */
     public void syncCreate(Consumer<Menu> creator){
         this.syncGUICreator = creator;
     }
-
+    
+    /**
+     * ボタンやアイテムの配置を非同期で設定します。
+     * メニューを開くたびに毎回実行されます
+     * @param creator Consumer
+     */
     public void asyncCreate(Consumer<Menu> creator){
         this.asyncGUICreator = creator;
     }
-
-
-    private Consumer<InventoryOpenEvent> inventoryOpenEventConsumer;
+    
 
     private GUICloseListener guiCloseListener;
-
-    public void onOpen(Consumer<InventoryOpenEvent> inventoryOpenEventConsumer){
-        this.inventoryOpenEventConsumer = inventoryOpenEventConsumer;
-    }
-
+    
+    /**
+     * メニューを閉じたときの動作を定義します
+     * @param guiCloseListener GUICloseListenerのインスタンス
+     */
     public void onClose(GUICloseListener guiCloseListener) {
         this.guiCloseListener = guiCloseListener;
     }
     
     public GUICloseListener getGuiCloseListener() {return guiCloseListener;}
-    
-    public Consumer<InventoryOpenEvent> getInventoryOpenEventConsumer() {return inventoryOpenEventConsumer;}
 
 
     private ArtFrame artFrame;
-
+    
+    /**
+     * ページフレームを設定します
+     * @param artFrame
+     */
     public void setArtFrame(ArtFrame artFrame) {this.artFrame = artFrame;}
     
     public ArtFrame getArtFrame() {return artFrame;}
@@ -111,7 +122,11 @@ public class ArtMenu {
         return completableFuture;
     }
     
-
+    
+    /**
+     * メニューを開きます
+     * @param player メニューを開くプレイヤー
+     */
     public void open(Player player){
         this.createMenu().thenAccept(menu -> {
             artGUI.runSync(() -> {
@@ -122,6 +137,14 @@ public class ArtMenu {
         });
     }
     
+    /**
+     * 指定されたページでメニューを開きます。
+     * open(player);メソッドを実行した後に限り有効です
+     * @param player メニューを開くプレイヤー
+     * @param menu メニューのボタンやアイテムの情報
+     * @param page 開くページインデックス
+     * @param historyData プレイヤーの閲覧履歴
+     */
     public void openPage(Player player, Menu menu, int page, HistoryData historyData){
         if(menu == null) return;
     
@@ -145,29 +168,29 @@ public class ArtMenu {
             MenuHistory previousMenu = historyData.getPreviousMenu();
             if(component instanceof MenuBackButton){
                 if(previousMenu == null){
-                    namedInventory.inventory.setItem(slot, ((StandardButton) component).getAlternativeButton().getItemStack());
-                    menu.setAltButton((StandardButton) component, true);
+                    namedInventory.inventory.setItem(slot, ((ReplaceableButton) component).getAlternativeButton().getItemStack());
+                    menu.setAltButton((ReplaceableButton) component, true);
                     continue;
                 }
             }
             if(component instanceof PageBackButton){
                 if(page == 0){
-                    namedInventory.inventory.setItem(slot, ((StandardButton) component).getAlternativeButton().getItemStack());
-                    menu.setAltButton((StandardButton) component, true);
+                    namedInventory.inventory.setItem(slot, ((ReplaceableButton) component).getAlternativeButton().getItemStack());
+                    menu.setAltButton((ReplaceableButton) component, true);
                     continue;
                 }
             }
             if(component instanceof PageNextButton){
                 if(page == menu.getCurrentMaxPage()){
-                    namedInventory.inventory.setItem(slot, ((StandardButton) component).getAlternativeButton().getItemStack());
-                    menu.setAltButton((StandardButton) component, true);
+                    namedInventory.inventory.setItem(slot, ((ReplaceableButton) component).getAlternativeButton().getItemStack());
+                    menu.setAltButton((ReplaceableButton) component, true);
                     continue;
                 }
             }
         
-            if(component instanceof StandardButton){
-                namedInventory.inventory.setItem(slot, ((StandardButton) component).getRewriteNameItem(historyData));
-                menu.setAltButton((StandardButton) component, false);
+            if(component instanceof ReplaceableButton){
+                namedInventory.inventory.setItem(slot, ((ReplaceableButton) component).getRewriteNameItem(historyData));
+                menu.setAltButton((ReplaceableButton) component, false);
                 continue;
             }
         
@@ -182,7 +205,12 @@ public class ArtMenu {
         historyData.setNowOpeningPage(page);
         player.openInventory(namedInventory.inventory);
     }
-
+    
+    /**
+     * 次のページを開きます
+     * open(player);メソッドを実行した後に限り有効です
+     * @param player メニューを開くプレイヤー
+     */
     public void nextPage(Player player){
         HistoryData historyData = HistoryData.getHistoryData(artGUI, player);
         MenuHistory menuHistory = historyData.getCurrentMenu();
@@ -192,6 +220,11 @@ public class ArtMenu {
         openPage(player, menuHistory.getMenu(), page, historyData);
     }
     
+    /**
+     * 一つ前のページを開きます
+     * open(player);メソッドを実行した後に限り有効です
+     * @param player メニューを開くプレイヤー
+     */
     public void backPage(Player player){
         HistoryData historyData = HistoryData.getHistoryData(artGUI, player);
         MenuHistory menuHistory = historyData.getCurrentMenu();

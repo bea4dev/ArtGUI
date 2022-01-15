@@ -6,7 +6,11 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-public abstract class StandardButton extends ArtButton{
+/**
+ * 名前やアイテムを自動で置き換えることが可能なボタン。
+ * 置き換えられる名前は ReplaceNameManager を参照
+ */
+public class ReplaceableButton extends ArtButton{
     
     protected ArtButton alternativeButton = new ArtButton(new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).name("&a").build());
     
@@ -15,7 +19,7 @@ public abstract class StandardButton extends ArtButton{
     public void setAlternativeButton(ArtButton alternativeButton) {this.alternativeButton = alternativeButton;}
     
     
-    public StandardButton(ItemStack itemStack) {
+    public ReplaceableButton(ItemStack itemStack) {
         super(itemStack);
     }
     

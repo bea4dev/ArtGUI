@@ -6,6 +6,10 @@ import org.bukkit.entity.Player;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
+/**
+ * プレイヤーのメニュー閲覧履歴
+ * 内部動作用
+ */
 public class HistoryData {
 
     public static HistoryData getHistoryData(ArtGUI artGUI, Player player){

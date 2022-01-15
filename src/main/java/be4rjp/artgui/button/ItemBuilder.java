@@ -9,10 +9,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * アイテムを作成するためのユーティリティクラス
+ */
 public class ItemBuilder {
 
     private final Material material;
-
+    
+    /**
+     * アイテムビルダーを作成
+     * @param material アイテムに設定するマテリアル
+     */
     public ItemBuilder(Material material){
         this.material = material;
     }
@@ -21,17 +28,31 @@ public class ItemBuilder {
     private String name = null;
 
     private String[] lore = null;
-
+    
+    /**
+     * アイテムに名前を設定する
+     * @param name 名前
+     * @return ItemBuilder
+     */
     public ItemBuilder name(String name){
         this.name = name;
         return this;
     }
-
+    
+    /**
+     * アイテムのloreを設定する
+     * @param lore 説明文等
+     * @return ItemBuilder
+     */
     public ItemBuilder lore(String... lore) {
         this.lore = lore;
         return this;
     }
-
+    
+    /**
+     * 設定された情報からBukkitのItemStackを作成します
+     * @return ItemStack
+     */
     public ItemStack build(){
         ItemStack itemStack = new ItemStack(material);
         ItemMeta itemMeta = itemStack.getItemMeta();

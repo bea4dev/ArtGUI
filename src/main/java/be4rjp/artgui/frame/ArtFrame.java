@@ -2,6 +2,9 @@ package be4rjp.artgui.frame;
 
 import be4rjp.artgui.button.ArtButton;
 
+/**
+ * メニューのページフレーム
+ */
 public class ArtFrame {
 
     private final int rows;

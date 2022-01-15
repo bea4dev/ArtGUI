@@ -4,36 +4,27 @@ import be4rjp.artgui.menu.HistoryData;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public final class ArtGUI extends JavaPlugin {
+public final class ArtGUI{
 
-    private static ArtGUI artGUI;
-
-    private Plugin plugin;
-
-    @Override
-    public void onEnable() {
-        // Plugin startup logic
-        artGUI = this;
-        plugin = this;
+    private final Plugin plugin;
+    
+    /**
+     * インスタンスを作成
+     * プラグイン起動時に作成してください
+     * @param plugin プラグインのインスタンス
+     */
+    public ArtGUI(Plugin plugin){
+        this.plugin = plugin;
         
-        registerListener();
+        Bukkit.getPluginManager().registerEvents(new EventListener(this), plugin);
     }
 
-    @Override
-    public void onDisable() {
-        // Plugin shutdown logic
-    }
-
-    public static ArtGUI getArtGUI() {
-        return artGUI;
-    }
-
+    
     public Plugin getPlugin() {return plugin;}
 
     public void runSync(Runnable runnable){Bukkit.getScheduler().runTask(plugin, runnable);}

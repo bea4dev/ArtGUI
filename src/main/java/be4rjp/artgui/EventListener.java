@@ -1,25 +1,19 @@
 package be4rjp.artgui;
 
 import be4rjp.artgui.button.*;
-import be4rjp.artgui.frame.ArtFrame;
-import be4rjp.artgui.frame.Artist;
 import be4rjp.artgui.menu.*;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.player.PlayerAnimationEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
-@SuppressWarnings("ConstantConditions")
 public class EventListener implements Listener {
     
     private final ArtGUI artGUI;
@@ -28,63 +22,9 @@ public class EventListener implements Listener {
         this.artGUI = artGUI;
     }
     
-    private String data = null;
-    
     @EventHandler
-    public void onPlayerClick(PlayerAnimationEvent e){
-        Player player = e.getPlayer();
-        if(!player.isSneaking()) return;
-    
-        Artist artist = new Artist(() -> {
-            
-            ArtButton V = null;
-            ArtButton G = new ArtButton(new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).name("&a").build());
-            
-            PageNextButton N = new PageNextButton(new ItemBuilder(Material.ARROW).name("&nNEXT").build());
-            N.setAlternativeButton(new ArtButton(new ItemBuilder(Material.EMERALD).name("&a&n次のページを開放").build())
-                    .listener((event, menu) -> {
-                menu.addPage();
-                menu.getArtMenu().nextPage(player);
-            }));
-            
-            PageBackButton P = new PageBackButton(new ItemBuilder(Material.ARROW).name("&nBACK").build());
-            MenuBackButton B = new MenuBackButton(new ItemBuilder(Material.OAK_DOOR).name("&nBACK TO {PreviousName}").build());
-            
-            return new ArtButton[]{
-                    V, V, V, V, V, V, V, V, V,
-                    V, V, V, V, V, V, V, V, V,
-                    G, G, G, P, B, N, G, G, G,
-            };
-        });
-        
-    
-        ArtMenu artMenu = artist.createMenu(artGUI, "&nTEST GUI &r[{CurrentPage}/{MaxPage}]");
-        
-        artMenu.asyncCreate(menu -> {
-            if(data != null) menu.deserializeItems(data);
-        });
-        
-        artMenu.onClose((event, menu) -> {
-            
-            data = menu.serializeItems();
-            /*
-            List<ItemStack> itemStackList = new ArrayList<>();
-            for(int page = 0; page <= menu.getCurrentMaxPage(); page++){
-                Map<Integer, Object> pageContents = menu.getPageComponents(page);
-                for(Object content : pageContents.values()){
-                    if(content == null) continue;
-                    if(content instanceof ItemStack){
-                        itemStackList.add((ItemStack) content);
-                    }
-                }
-            }
-            player.sendMessage("Size -> " + itemStackList.size());
-            for(ItemStack itemStack : itemStackList){
-                player.sendMessage(itemStack.getItemMeta().getDisplayName());
-            }*/
-        });
-        
-        artMenu.open(player);
+    public void onPlayerQuit(PlayerQuitEvent event){
+        HistoryData.removeHistoryData(artGUI, event.getPlayer());
     }
     
     @EventHandler
@@ -154,9 +94,9 @@ public class EventListener implements Listener {
             Object component = components.get(event.getSlot());
             if(component == null) return;
     
-            if(component instanceof StandardButton){
-                if(menu.isAltButton((StandardButton) component)){
-                    ButtonClickListener buttonClickListener = ((StandardButton) component).getAlternativeButton().getEventListener();
+            if(component instanceof ReplaceableButton){
+                if(menu.isAltButton((ReplaceableButton) component)){
+                    ButtonClickListener buttonClickListener = ((ReplaceableButton) component).getAlternativeButton().getEventListener();
                     if(buttonClickListener != null) buttonClickListener.onClick(event, menu);
                     event.setCancelled(true);
                     return;
