@@ -110,7 +110,12 @@ public class EventListener implements Listener {
             if(components == null) return;
             
             Object component = components.get(event.getSlot());
-            if(component == null) return;
+            if(component == null){
+                if(!artGUIHolder.getArtMenu().isCanPutItem()){
+                    event.setCancelled(true);
+                }
+                return;
+            }
     
             if(component instanceof ReplaceableButton){
                 if(menu.isAltButton((ReplaceableButton) component)){
