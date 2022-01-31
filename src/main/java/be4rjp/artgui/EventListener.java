@@ -75,18 +75,19 @@ public class EventListener implements Listener {
         Inventory inventory = event.getClickedInventory();
         if(inventory == null) return;
         
+        /*
         Inventory topInventory = event.getView().getTopInventory();
         InventoryHolder topHolder = topInventory.getHolder();
         if(topHolder instanceof ArtGUIHolder){
             ArtGUIHolder artGUIHolder = ((ArtGUIHolder) topHolder);
             
-            if(!artGUIHolder.getArtMenu().isCanPutItem()){
+            if(artGUIHolder.getArtMenu().getFillButton() != null){
                 if(topInventory != event.getClickedInventory()){
                     event.setCancelled(true);
                     return;
                 }
             }
-        }
+        }*/
         
         InventoryHolder inventoryHolder = inventory.getHolder();
         
@@ -111,6 +112,8 @@ public class EventListener implements Listener {
             
             Object component = components.get(event.getSlot());
             if(component == null) return;
+            
+            
     
             if(component instanceof ReplaceableButton){
                 if(menu.isAltButton((ReplaceableButton) component)){
@@ -137,6 +140,11 @@ public class EventListener implements Listener {
                     listener.onClick(event, menu);
                 }
                 event.setCancelled(true);
+            }else{
+                if(artMenu.getFillButton() != null){
+                    inventory.setItem(event.getSlot(), artMenu.getFillButton().getItemStack());
+                    components.put(event.getSlot(), artMenu.getFillButton());
+                }
             }
         }
     }

@@ -86,22 +86,19 @@ public class ArtMenu {
     public ArtFrame getArtFrame() {return artFrame;}
     
     
-    private boolean canPutItem = false;
+    private ArtButton fillButton = null;
     
     /**
-     * アイテムの挿入を許可するかどうかの設定
-     * @return boolean
+     * 開いているスロットに挿入するボタンを取得
+     * @return ArtButton
      */
-    @Deprecated//Future
-    public boolean isCanPutItem() {return canPutItem;}
+    public ArtButton getFillButton() {return fillButton;}
     
     /**
-     * アイテムの挿入を許可するかどうかの設定
-     * trueにするとプレイヤーがGUI内にアイテムを挿入できるようになる
-     * @param canPutItem boolean
+     * 開いているスロットに挿入するボタンを設定
+     * @param fillButton ArtButton
      */
-    @Deprecated//Future
-    public void setCanPutItem(boolean canPutItem) {this.canPutItem = canPutItem;}
+    public void setFillButton(ArtButton fillButton) {this.fillButton = fillButton;}
     
     
     private NamedInventory createInventory(@Nullable HistoryData historyData){
@@ -124,9 +121,11 @@ public class ArtMenu {
                 if(asyncGUICreator != null){
                     artGUI.runAsync(() -> {
                         asyncGUICreator.accept(menu);
+                        fillWithButton(menu);
                         completableFuture.complete(menu);
                     });
                 }else{
+                    fillWithButton(menu);
                     completableFuture.complete(menu);
                 }
             });
@@ -134,12 +133,23 @@ public class ArtMenu {
             if (asyncGUICreator != null) {
                 artGUI.runAsync(() -> {
                     asyncGUICreator.accept(menu);
+                    fillWithButton(menu);
                     completableFuture.complete(menu);
                 });
             }
         }
 
         return completableFuture;
+    }
+    
+    private void fillWithButton(Menu menu){
+        if(fillButton == null) return;
+        
+        for(Map<Integer, Object> slotMap : menu.getComponents().values()){
+            for(int i = 0; i < slots; i++){
+                slotMap.computeIfAbsent(i, k -> fillButton);
+            }
+        }
     }
     
     
