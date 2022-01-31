@@ -30,7 +30,7 @@
     <dependency>
         <groupId>com.github.Be4rJP</groupId>
         <artifactId>ArtGUI</artifactId>
-        <version>54ffe9cdc3</version>
+        <version>v1.0.1</version>
     </dependency>
 </dependencies>
 ```
