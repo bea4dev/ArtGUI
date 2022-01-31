@@ -92,6 +92,7 @@ public class ArtMenu {
      * アイテムの挿入を許可するかどうかの設定
      * @return boolean
      */
+    @Deprecated//Future
     public boolean isCanPutItem() {return canPutItem;}
     
     /**
@@ -99,6 +100,7 @@ public class ArtMenu {
      * trueにするとプレイヤーがGUI内にアイテムを挿入できるようになる
      * @param canPutItem boolean
      */
+    @Deprecated//Future
     public void setCanPutItem(boolean canPutItem) {this.canPutItem = canPutItem;}
     
     
