@@ -75,6 +75,19 @@ public class EventListener implements Listener {
         Inventory inventory = event.getClickedInventory();
         if(inventory == null) return;
         
+        Inventory topInventory = event.getView().getTopInventory();
+        InventoryHolder topHolder = topInventory.getHolder();
+        if(topHolder instanceof ArtGUIHolder){
+            ArtGUIHolder artGUIHolder = ((ArtGUIHolder) topHolder);
+            
+            if(!artGUIHolder.getArtMenu().isCanPutItem()){
+                if(topInventory != event.getClickedInventory()){
+                    event.setCancelled(true);
+                    return;
+                }
+            }
+        }
+        
         InventoryHolder inventoryHolder = inventory.getHolder();
         
         if(inventoryHolder == null) return;
