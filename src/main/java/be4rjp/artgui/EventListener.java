@@ -36,6 +36,8 @@ public class EventListener implements Listener {
         if(inventoryHolder instanceof ArtGUIHolder) {
             ArtGUIHolder artGUIHolder = ((ArtGUIHolder) inventoryHolder);
             
+            if(artGUIHolder.getArtMenu().getArtGUI() != this.artGUI) return;
+            
             Map<Integer, Object> pageContents = artGUIHolder.getPageContents();
             for(int slot = 0; slot < inventory.getSize(); slot++){
                 if(pageContents.get(slot) instanceof ArtButton) continue;
@@ -78,6 +80,9 @@ public class EventListener implements Listener {
         if(inventoryHolder == null) return;
         if(inventoryHolder instanceof ArtGUIHolder){
             ArtGUIHolder artGUIHolder = ((ArtGUIHolder) inventoryHolder);
+    
+            if(artGUIHolder.getArtMenu().getArtGUI() != this.artGUI) return;
+            
             HistoryData historyData = artGUIHolder.getHistoryData();
             MenuHistory menuHistory = historyData.getCurrentMenu();
             if(menuHistory == null) return;

@@ -36,6 +36,8 @@ public class ArtMenu {
     
     public String getDisplayName() {return displayName;}
     
+    public ArtGUI getArtGUI() {return artGUI;}
+    
     
     private Consumer<Menu> syncGUICreator = null;
 
