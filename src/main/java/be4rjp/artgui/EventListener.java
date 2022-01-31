@@ -7,6 +7,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -71,23 +72,28 @@ public class EventListener implements Listener {
     }
     
     @EventHandler
+    public void onItemMove(InventoryMoveItemEvent event){
+        Inventory inventory = event.getDestination();
+        Inventory ini = event.getSource();
+    
+        InventoryHolder inventoryHolder = inventory.getHolder();
+    
+        if(inventoryHolder == null) return;
+        if(inventoryHolder instanceof ArtGUIHolder && ini.getHolder() == null) {
+            ArtGUIHolder artGUIHolder = ((ArtGUIHolder) inventoryHolder);
+            
+            if(artGUIHolder.getArtMenu().getArtGUI() != this.artGUI) return;
+            
+            if(!artGUIHolder.getArtMenu().isCanPutItems()){
+                event.setCancelled(true);
+            }
+        }
+    }
+    
+    @EventHandler
     public void onInventoryClick(InventoryClickEvent event){
         Inventory inventory = event.getClickedInventory();
         if(inventory == null) return;
-        
-        /*
-        Inventory topInventory = event.getView().getTopInventory();
-        InventoryHolder topHolder = topInventory.getHolder();
-        if(topHolder instanceof ArtGUIHolder){
-            ArtGUIHolder artGUIHolder = ((ArtGUIHolder) topHolder);
-            
-            if(artGUIHolder.getArtMenu().getFillButton() != null){
-                if(topInventory != event.getClickedInventory()){
-                    event.setCancelled(true);
-                    return;
-                }
-            }
-        }*/
         
         InventoryHolder inventoryHolder = inventory.getHolder();
         
@@ -140,11 +146,6 @@ public class EventListener implements Listener {
                     listener.onClick(event, menu);
                 }
                 event.setCancelled(true);
-            }else{
-                if(artMenu.getFillButton() != null){
-                    inventory.setItem(event.getSlot(), artMenu.getFillButton().getItemStack());
-                    components.put(event.getSlot(), artMenu.getFillButton());
-                }
             }
         }
     }

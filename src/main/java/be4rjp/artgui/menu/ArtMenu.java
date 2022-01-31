@@ -86,19 +86,19 @@ public class ArtMenu {
     public ArtFrame getArtFrame() {return artFrame;}
     
     
-    private ArtButton fillButton = null;
+    private boolean canPutItems = false;
     
     /**
-     * 開いているスロットに挿入するボタンを取得
-     * @return ArtButton
+     * GUIの空欄にプレイヤーがアイテムを挿入できるかどうかを取得します
+     * @return boolean
      */
-    public ArtButton getFillButton() {return fillButton;}
+    public boolean isCanPutItems() {return canPutItems;}
     
     /**
-     * 開いているスロットに挿入するボタンを設定
-     * @param fillButton ArtButton
+     * GUIの空欄にプレイヤーがアイテムを挿入できるかどうかを設定します
+     * @param canPutItems boolean
      */
-    public void setFillButton(ArtButton fillButton) {this.fillButton = fillButton;}
+    public void setCanPutItems(boolean canPutItems) {this.canPutItems = canPutItems;}
     
     
     private NamedInventory createInventory(@Nullable HistoryData historyData){
@@ -121,11 +121,9 @@ public class ArtMenu {
                 if(asyncGUICreator != null){
                     artGUI.runAsync(() -> {
                         asyncGUICreator.accept(menu);
-                        fillWithButton(menu);
                         completableFuture.complete(menu);
                     });
                 }else{
-                    fillWithButton(menu);
                     completableFuture.complete(menu);
                 }
             });
@@ -133,23 +131,12 @@ public class ArtMenu {
             if (asyncGUICreator != null) {
                 artGUI.runAsync(() -> {
                     asyncGUICreator.accept(menu);
-                    fillWithButton(menu);
                     completableFuture.complete(menu);
                 });
             }
         }
 
         return completableFuture;
-    }
-    
-    private void fillWithButton(Menu menu){
-        if(fillButton == null) return;
-        
-        for(Map<Integer, Object> slotMap : menu.getComponents().values()){
-            for(int i = 0; i < slots; i++){
-                slotMap.computeIfAbsent(i, k -> fillButton);
-            }
-        }
     }
     
     
