@@ -78,16 +78,19 @@ public class EventListener implements Listener {
     
         InventoryHolder inventoryHolder = inventory.getHolder();
     
+        System.out.println("EVENT");
         if(inventoryHolder == null){
             System.out.println("HOLDER NULL");
             return;
         }
         if(inventoryHolder instanceof ArtGUIHolder && ini.getHolder() == null) {
+            System.out.println("IF");
             ArtGUIHolder artGUIHolder = ((ArtGUIHolder) inventoryHolder);
             
             if(artGUIHolder.getArtMenu().getArtGUI() != this.artGUI) return;
             
             if(!artGUIHolder.getArtMenu().isCanPutItems()){
+                System.out.println("CANCEL");
                 event.setCancelled(true);
             }
         }else{
