@@ -48,18 +48,14 @@ public class ArtMenu {
      * メニューを開くたびに毎回実行されます
      * @param creator Consumer
      */
-    public void syncCreate(Consumer<Menu> creator){
-        this.syncGUICreator = creator;
-    }
+    public void syncCreate(Consumer<Menu> creator){this.syncGUICreator = creator;}
     
     /**
      * ボタンやアイテムの配置を非同期で設定します。
      * メニューを開くたびに毎回実行されます
      * @param creator Consumer
      */
-    public void asyncCreate(Consumer<Menu> creator){
-        this.asyncGUICreator = creator;
-    }
+    public void asyncCreate(Consumer<Menu> creator){this.asyncGUICreator = creator;}
     
 
     private GUICloseListener guiCloseListener;
@@ -84,6 +80,21 @@ public class ArtMenu {
     public void setArtFrame(ArtFrame artFrame) {this.artFrame = artFrame;}
     
     public ArtFrame getArtFrame() {return artFrame;}
+    
+    
+    private boolean isCanPutItem = false;
+    
+    /**
+     * このGUIにプレイヤーがアイテムを挿入できるかどうかの設定
+     * @return boolean
+     */
+    public boolean isCanPutItem() {return isCanPutItem;}
+    
+    /**
+     * このGUIにプレイヤーがアイテムを挿入できるかどうかの設定
+     * @param canPutItem  boolean
+     */
+    public void setCanPutItem(boolean canPutItem) {isCanPutItem = canPutItem;}
     
     
     private NamedInventory createInventory(@Nullable HistoryData historyData){

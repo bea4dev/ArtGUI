@@ -75,6 +75,21 @@ public class EventListener implements Listener {
         if(inventory == null) return;
         
         InventoryHolder inventoryHolder = inventory.getHolder();
+    
+        Inventory topInventory = event.getView().getTopInventory();
+        InventoryHolder topHolder = topInventory.getHolder();
+        if(topHolder instanceof ArtGUIHolder){
+            ArtGUIHolder artGUIHolder = ((ArtGUIHolder) topHolder);
+    
+            if(artGUIHolder.getArtMenu().getArtGUI() != this.artGUI) return;
+        
+            if(!artGUIHolder.getArtMenu().isCanPutItem()){
+                if(topInventory != event.getClickedInventory() && event.getCursor() == null){
+                    event.setCancelled(true);
+                    return;
+                }
+            }
+        }
         
         if(inventoryHolder == null) return;
         if(inventoryHolder instanceof ArtGUIHolder){
@@ -125,6 +140,12 @@ public class EventListener implements Listener {
                     listener.onClick(event, menu);
                 }
                 event.setCancelled(true);
+            }else{
+                if(!artGUIHolder.getArtMenu().isCanPutItem()){
+                    if(topInventory != event.getClickedInventory() && event.getCursor() != null){
+                        event.setCancelled(true);
+                    }
+                }
             }
         }
     }
