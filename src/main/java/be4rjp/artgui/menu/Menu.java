@@ -162,6 +162,8 @@ public class Menu {
         List<ItemStack> itemStackList = new ArrayList<>();
         for(int page = 0; page <= currentMaxPage; page++){
             Map<Integer, Object> pageContents = getPageComponents(page);
+            if(pageContents == null) continue;
+            
             for(Object content : pageContents.values()){
                 if(content == null) continue;
                 if(content instanceof ItemStack){
