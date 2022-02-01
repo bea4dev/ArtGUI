@@ -86,21 +86,6 @@ public class ArtMenu {
     public ArtFrame getArtFrame() {return artFrame;}
     
     
-    private boolean canPutItems = false;
-    
-    /**
-     * GUIの空欄にプレイヤーがアイテムを挿入できるかどうかを取得します
-     * @return boolean
-     */
-    public boolean isCanPutItems() {return canPutItems;}
-    
-    /**
-     * GUIの空欄にプレイヤーがアイテムを挿入できるかどうかを設定します
-     * @param canPutItems boolean
-     */
-    public void setCanPutItems(boolean canPutItems) {this.canPutItems = canPutItems;}
-    
-    
     private NamedInventory createInventory(@Nullable HistoryData historyData){
         String replaced = this.displayName;
         if(historyData != null) replaced = ReplaceNameManager.replace(replaced, historyData);

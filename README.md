@@ -31,6 +31,7 @@
         <groupId>com.github.Be4rJP</groupId>
         <artifactId>ArtGUI</artifactId>
         <version>v1.0.2</version>
+        <scope>compile</scope>
     </dependency>
 </dependencies>
 ```

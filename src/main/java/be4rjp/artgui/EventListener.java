@@ -70,25 +70,6 @@ public class EventListener implements Listener {
     }
     
     @EventHandler
-    public void onItemMove(InventoryDragEvent event){
-        Inventory inventory = event.getView().getTopInventory();
-        InventoryHolder inventoryHolder = inventory.getHolder();
-    
-        if(inventoryHolder == null) return;
-        if(inventoryHolder instanceof ArtGUIHolder) {
-            ArtGUIHolder artGUIHolder = ((ArtGUIHolder) inventoryHolder);
-            if(artGUIHolder.getArtMenu().getArtGUI() != this.artGUI) return;
-            
-            Inventory clicked = event.getInventory();
-            InventoryHolder clickedHolder = clicked.getHolder();
-            
-            if(clickedHolder == null && !artGUIHolder.getArtMenu().isCanPutItems()){
-                event.setCancelled(true);
-            }
-        }
-    }
-    
-    @EventHandler
     public void onInventoryClick(InventoryClickEvent event){
         Inventory inventory = event.getClickedInventory();
         if(inventory == null) return;
