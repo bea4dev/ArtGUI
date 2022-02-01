@@ -5,9 +5,7 @@ import be4rjp.artgui.menu.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryMoveItemEvent;
+import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -72,29 +70,21 @@ public class EventListener implements Listener {
     }
     
     @EventHandler
-    public void onItemMove(InventoryMoveItemEvent event){
-        Inventory inventory = event.getDestination();
-        Inventory ini = event.getSource();
-    
+    public void onItemMove(InventoryDragEvent event){
+        Inventory inventory = event.getView().getTopInventory();
         InventoryHolder inventoryHolder = inventory.getHolder();
     
-        System.out.println("EVENT");
-        if(inventoryHolder == null){
-            System.out.println("HOLDER NULL");
-            return;
-        }
-        if(inventoryHolder instanceof ArtGUIHolder && ini.getHolder() == null) {
-            System.out.println("IF");
+        if(inventoryHolder == null) return;
+        if(inventoryHolder instanceof ArtGUIHolder) {
             ArtGUIHolder artGUIHolder = ((ArtGUIHolder) inventoryHolder);
-            
             if(artGUIHolder.getArtMenu().getArtGUI() != this.artGUI) return;
             
-            if(!artGUIHolder.getArtMenu().isCanPutItems()){
-                System.out.println("CANCEL");
+            Inventory clicked = event.getInventory();
+            InventoryHolder clickedHolder = clicked.getHolder();
+            
+            if(clickedHolder == null && !artGUIHolder.getArtMenu().isCanPutItems()){
                 event.setCancelled(true);
             }
-        }else{
-            System.out.println("ELSE");
         }
     }
     
