@@ -84,7 +84,7 @@ public class EventListener implements Listener {
             if(artGUIHolder.getArtMenu().getArtGUI() != this.artGUI) return;
         
             if(!artGUIHolder.getArtMenu().isCanPutItem()){
-                if(topInventory != event.getClickedInventory() && event.getCursor() == null){
+                if(topInventory != event.getClickedInventory() && event.getCursor() != null){
                     event.setCancelled(true);
                     return;
                 }
