@@ -56,9 +56,12 @@ public class HistoryData {
     public void clearGUIQueue(){this.historyQueue.clear();}
 
     public void addQueue(ArtMenu artMenu, Menu menu, int page){
-        for(MenuHistory menuHistory : historyQueue){
+        List<MenuHistory> historyList = new ArrayList<>(historyQueue);
+        for (ListIterator<MenuHistory> i = historyList.listIterator(historyList.size()); i.hasPrevious();) {
+            MenuHistory menuHistory = i.previous();
             if(menuHistory.getArtMenu() == artMenu){
                 menuHistory.setPage(page);
+                menuHistory.setMenu(menu);
                 return;
             }
         }

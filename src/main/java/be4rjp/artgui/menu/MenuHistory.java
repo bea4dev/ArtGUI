@@ -4,7 +4,7 @@ public class MenuHistory {
 
     private final ArtMenu artMenu;
     
-    private final Menu menu;
+    private Menu menu;
 
     private int page = 0;
 
@@ -21,5 +21,7 @@ public class MenuHistory {
     public Menu getMenu() {return menu;}
     
     public void setPage(int page) {this.page = page;}
-
+    
+    public void setMenu(Menu menu) {this.menu = menu;}
+    
 }
