@@ -64,7 +64,7 @@ public class EventListener implements Listener {
             }
             if(nowOpeningMenu == artMenu && nowOpeningPage == artGUIHolder.getPage()){
                 if(artMenu.getGuiCloseListener() != null) artMenu.getGuiCloseListener().onClose(event, artGUIHolder.getMenu());
-                historyData.clearGUIQueue();
+                if (historyData.clearOnClose) historyData.clearGUIQueue();
             }
         }
     }

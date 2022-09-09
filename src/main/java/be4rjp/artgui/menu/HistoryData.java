@@ -33,6 +33,8 @@ public class HistoryData {
     
     private int nowOpeningPage = 0;
     
+    public boolean clearOnClose = true;
+    
     public ArtMenu getNowOpeningMenu() {return nowOpeningMenu;}
     
     public void setNowOpeningMenu(ArtMenu nowOpeningMenu) {this.nowOpeningMenu = nowOpeningMenu;}
