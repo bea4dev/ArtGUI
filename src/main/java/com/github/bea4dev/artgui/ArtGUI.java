@@ -1,6 +1,6 @@
-package be4rjp.artgui;
+package com.github.bea4dev.artgui;
 
-import be4rjp.artgui.menu.HistoryData;
+import com.github.bea4dev.artgui.menu.HistoryData;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;

@@ -1,8 +1,8 @@
-package be4rjp.artgui.menu;
+package com.github.bea4dev.artgui.menu;
 
-import be4rjp.artgui.button.ArtButton;
-import be4rjp.artgui.button.ReplaceableButton;
-import be4rjp.artgui.frame.ArtFrame;
+import com.github.bea4dev.artgui.button.ArtButton;
+import com.github.bea4dev.artgui.button.ReplaceableButton;
+import com.github.bea4dev.artgui.frame.ArtFrame;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.io.BukkitObjectInputStream;

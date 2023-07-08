@@ -1,6 +1,6 @@
-package be4rjp.artgui.menu;
+package com.github.bea4dev.artgui.menu;
 
-import be4rjp.artgui.ArtGUI;
+import com.github.bea4dev.artgui.ArtGUI;
 import org.bukkit.entity.Player;
 
 import java.util.*;

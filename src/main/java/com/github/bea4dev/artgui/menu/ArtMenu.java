@@ -1,8 +1,8 @@
-package be4rjp.artgui.menu;
+package com.github.bea4dev.artgui.menu;
 
-import be4rjp.artgui.ArtGUI;
-import be4rjp.artgui.button.*;
-import be4rjp.artgui.frame.ArtFrame;
+import com.github.bea4dev.artgui.ArtGUI;
+import com.github.bea4dev.artgui.button.*;
+import com.github.bea4dev.artgui.frame.ArtFrame;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -93,27 +93,29 @@ public class ArtMenu {
     private CompletableFuture<Menu> createMenu(){
         CompletableFuture<Menu> completableFuture = new CompletableFuture<>();
 
-        if(artFrame == null) artFrame = new ArtFrame(rows);
+        if (artFrame == null) artFrame = new ArtFrame(rows);
         Menu menu = new Menu(this, rows, slots, artFrame);
         
-        if(syncGUICreator != null){
+        if (syncGUICreator != null) {
             artGUI.runSync(() -> {
                 syncGUICreator.accept(menu);
-                if(asyncGUICreator != null){
+                if (asyncGUICreator != null) {
                     artGUI.runAsync(() -> {
                         asyncGUICreator.accept(menu);
                         completableFuture.complete(menu);
                     });
-                }else{
+                } else {
                     completableFuture.complete(menu);
                 }
             });
-        }else {
+        } else {
             if (asyncGUICreator != null) {
                 artGUI.runAsync(() -> {
                     asyncGUICreator.accept(menu);
                     completableFuture.complete(menu);
                 });
+            } else {
+                completableFuture.complete(menu);
             }
         }
 
@@ -126,13 +128,11 @@ public class ArtMenu {
      * @param player メニューを開くプレイヤー
      */
     public void open(Player player){
-        this.createMenu().thenAccept(menu -> {
-            artGUI.runSync(() -> {
-                HistoryData historyData = HistoryData.getHistoryData(artGUI, player);
-                int page = historyData.getPage(this);
-                openPage(player, menu, page, historyData);
-            });
-        });
+        this.createMenu().thenAccept(menu -> artGUI.runSync(() -> {
+            HistoryData historyData = HistoryData.getHistoryData(artGUI, player);
+            int page = historyData.getPage(this);
+            openPage(player, menu, page, historyData);
+        }));
     }
     
     /**

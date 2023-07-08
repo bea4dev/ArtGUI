@@ -1,8 +1,8 @@
-package be4rjp.artgui.frame;
+package com.github.bea4dev.artgui.frame;
 
-import be4rjp.artgui.ArtGUI;
-import be4rjp.artgui.button.ArtButton;
-import be4rjp.artgui.menu.ArtMenu;
+import com.github.bea4dev.artgui.ArtGUI;
+import com.github.bea4dev.artgui.button.ArtButton;
+import com.github.bea4dev.artgui.menu.ArtMenu;
 
 import java.util.function.Supplier;
 

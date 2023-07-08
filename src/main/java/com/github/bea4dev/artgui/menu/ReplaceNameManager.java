@@ -1,4 +1,4 @@
-package be4rjp.artgui.menu;
+package com.github.bea4dev.artgui.menu;
 
 /**
  * ボタン名やインベントリ名の特定の文字列を置き換えます。

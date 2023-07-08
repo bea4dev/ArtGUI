@@ -1,4 +1,4 @@
-package be4rjp.artgui.button;
+package com.github.bea4dev.artgui.button;
 
 import org.bukkit.inventory.ItemStack;
 

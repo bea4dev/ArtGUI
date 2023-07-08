@@ -1,12 +1,12 @@
-package be4rjp.artgui.button;
+package com.github.bea4dev.artgui.button;
 
 import org.bukkit.inventory.ItemStack;
 
 /**
  * メニュー内のページを切り替えるためのボタン
  */
-public class PageNextButton extends ReplaceableButton {
-    public PageNextButton(ItemStack itemStack) {
+public class PageBackButton extends ReplaceableButton {
+    public PageBackButton(ItemStack itemStack) {
         super(itemStack);
     }
 }

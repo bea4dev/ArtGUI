@@ -1,4 +1,4 @@
-package be4rjp.artgui.menu;
+package com.github.bea4dev.artgui.menu;
 
 import org.bukkit.inventory.Inventory;
 

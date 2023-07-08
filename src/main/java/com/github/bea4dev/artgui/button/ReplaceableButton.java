@@ -1,7 +1,9 @@
-package be4rjp.artgui.button;
+package com.github.bea4dev.artgui.button;
 
-import be4rjp.artgui.menu.HistoryData;
-import be4rjp.artgui.menu.ReplaceNameManager;
+import com.github.bea4dev.artgui.menu.HistoryData;
+import com.github.bea4dev.artgui.menu.ReplaceNameManager;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -27,8 +29,18 @@ public class ReplaceableButton extends ArtButton{
         ItemStack itemStack = this.itemStack.clone();
         ItemMeta itemMeta = itemStack.getItemMeta();
         if(itemMeta == null) return itemStack;
-    
-        itemMeta.setDisplayName(ReplaceNameManager.replace(itemMeta.getDisplayName(), historyData));
+
+        Component displayName = itemMeta.displayName();
+        boolean hasTextDisplayName = false;
+        if (displayName != null) {
+            if (displayName instanceof TextComponent) {
+                hasTextDisplayName = true;
+            }
+        }
+
+        if (hasTextDisplayName) {
+            itemMeta.setDisplayName(ReplaceNameManager.replace(itemMeta.getDisplayName(), historyData));
+        }
     
         itemStack.setItemMeta(itemMeta);
         return itemStack;

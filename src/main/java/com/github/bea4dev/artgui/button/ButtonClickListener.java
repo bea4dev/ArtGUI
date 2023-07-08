@@ -1,6 +1,6 @@
-package be4rjp.artgui.button;
+package com.github.bea4dev.artgui.button;
 
-import be4rjp.artgui.menu.Menu;
+import com.github.bea4dev.artgui.menu.Menu;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
 /**

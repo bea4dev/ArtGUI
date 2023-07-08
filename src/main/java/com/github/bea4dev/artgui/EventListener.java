@@ -1,7 +1,7 @@
-package be4rjp.artgui;
+package com.github.bea4dev.artgui;
 
-import be4rjp.artgui.button.*;
-import be4rjp.artgui.menu.*;
+import com.github.bea4dev.artgui.button.*;
+import com.github.bea4dev.artgui.menu.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
